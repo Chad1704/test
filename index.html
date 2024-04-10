@@ -20,43 +20,17 @@
 <body>
     <h1>All Players by Team</h1>
     <div id="teamsContainer"></div>
-    <button onclick="regeneratePlayers()">Regenerate Players</button>
 
+    <script src="playerGenerator.js"></script>
     <script>
         // Array to store team data
         const teams = Array.from({ length: 30 }, (_, i) => ({ id: 'team_' + i, name: 'Team ' + (i + 1), players: [] }));
 
-        // Function to generate a random number between min and max (inclusive)
-        function getRandomNumber(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-
-        // Function to generate a random player with a unique ID
-        function generateRandomPlayer(playerId) {
-            const positions = ['Guard', 'Forward', 'Center'];
-            const playerName = 'Player ' + playerId.split('_')[1]; // Extract numeric part from player ID
-            const position = positions[Math.floor(Math.random() * positions.length)]; // Randomly select position
-            const shootingSkill = getRandomNumber(50, 99);
-            const passingSkill = getRandomNumber(40, 90);
-            const defenseSkill = getRandomNumber(30, 95);
-
-            const player = {
-                id: playerId,
-                name: playerName,
-                position: position,
-                shooting: shootingSkill,
-                passing: passingSkill,
-                defense: defenseSkill
-            };
-
-            return player;
-        }
-
         // Function to generate teams and assign players to them
         function generateTeams() {
-            const shuffledPlayerIds = Object.keys(localStorage).filter(key => key.startsWith('player_')).sort(() => 0.5 - Math.random()); // Shuffle player IDs
-            let playerIndex = 0;
             teams.forEach(team => {
+                const shuffledPlayerIds = Object.keys(localStorage).filter(key => key.startsWith('player_')).sort(() => 0.5 - Math.random()); // Shuffle player IDs
+                let playerIndex = 0;
                 for (let i = 0; i < 12; i++) {
                     if (playerIndex < shuffledPlayerIds.length) {
                         const playerId = shuffledPlayerIds[playerIndex];
@@ -93,29 +67,13 @@
             window.location.href = 'player_lookup.html?playerId=' + playerId;
         }
 
-        // Function to regenerate players
-        function regeneratePlayers() {
-            if (Object.keys(localStorage).filter(key => key.startsWith('player_')).length > 0) {
-                alert('Players already exist. Please refresh the page to regenerate.');
-                return;
-            }
-            for (let i = 0; i < 360; i++) { // Generate 360 players (30 teams * 12 players)
-                const playerId = 'player_' + i;
-                const player = generateRandomPlayer(playerId);
-                localStorage.setItem(playerId, JSON.stringify(player)); // Store player data in local storage
-            }
-            generateTeams();
-            displayTeams();
-        }
-
         // Check if players already exist in local storage on page load
         window.onload = function () {
             if (Object.keys(localStorage).filter(key => key.startsWith('player_')).length === 0) {
                 regeneratePlayers(); // If players don't exist, regenerate them
-            } else {
-                generateTeams(); // If players exist, generate teams and display them
-                displayTeams();
             }
+            generateTeams();
+            displayTeams();
         };
     </script>
 </body>
