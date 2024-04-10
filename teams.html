@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Players by Team</title>
+    <style>
+        .team {
+            margin-bottom: 20px;
+        }
+        .team h2 {
+            margin-bottom: 10px;
+        }
+        .player {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>All Players by Team</h1>
+    <div id="teamsContainer"></div>
+
+    <script>
+        // Array to store team data
+        const teams = Array.from({ length: 30 }, (_, i) => ({ id: 'team_' + i, name: 'Team ' + (i + 1), players: [] }));
+
+        // Function to generate a random number between min and max (inclusive)
+        function getRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Function to generate a random player with a unique ID
+        function generateRandomPlayer() {
+            const playerId = 'player_' + Object.keys(localStorage).length; // Generate a unique player ID
+            const positions = ['Guard', 'Forward', 'Center'];
+            const playerName = 'Player ' + playerId.split('_')[1]; // Extract numeric part from player ID
+            const position = positions[Math.floor(Math.random() * positions.length)]; // Randomly select position
+            const shootingSkill = getRandomNumber(50, 99);
+            const passingSkill = getRandomNumber(40, 90);
+            const defenseSkill = getRandomNumber(30, 95);
+
+            const player = {
+                id: playerId,
+                name: playerName,
+                position: position,
+                shooting: shootingSkill,
+                passing: passingSkill,
+                defense: defenseSkill
+            };
+
+            localStorage.setItem(playerId, JSON.stringify(player)); // Store player data in local storage
+        }
+
+        // Function to generate teams and assign players to them
+        function generateTeams() {
+            const shuffledPlayerIds = Object.keys(localStorage).sort(() => 0.5 - Math.random()); // Shuffle player IDs
+            let playerIndex = 0;
+            teams.forEach(team => {
+                for (let i = 0; i < 12; i++) {
+                    if (playerIndex < shuffledPlayerIds.length) {
+                        const playerId = shuffledPlayerIds[playerIndex];
+                        const player = JSON.parse(localStorage.getItem(playerId));
+                        if (player) {
+                            team.players.push(player);
+                            playerIndex++;
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to display team stats on the HTML page
+        function displayTeams() {
+            const teamsContainer = document.getElementById('teamsContainer');
+            teamsContainer.innerHTML = ''; // Clear existing content
+
+            teams.forEach(team => {
+                const teamDiv = document.createElement('div');
+                teamDiv.classList.add('team');
+                teamDiv.innerHTML = `
+                    <h2>${team.name}</h2>
+                    <div class="players">
+                        ${team.players.map(player => `<p class="player">${player.name} - ${player.position}</p>`).join('')}
+                    </div>
+                `;
+                teamsContainer.appendChild(teamDiv);
+            });
+        }
+
+        // Call the function to generate players, generate teams, and display them on page load
+        window.onload = function () {
+            for (let i = 0; i < 360; i++) { // Generate 360 players (30 teams * 12 players)
+                generateRandomPlayer();
+            }
+            generateTeams();
+            displayTeams();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Lookup</title>
+</head>
+<body>
+    <h1>Player Lookup</h1>
+    <label for="playerIdInput">Enter Player ID:</label>
+    <input type="text" id="playerIdInput">
+    <button onclick="lookupPlayer()">Lookup Player</button>
+    <div id="playerStats"></div>
+
+    <script>
+        function lookupPlayer() {
+            const playerId = document.getElementById('playerIdInput').value.trim();
+            if (!playerId) {
+                alert('Please enter a player ID.');
+                return;
+            }
+
+            const playerData = JSON.parse(localStorage.getItem(playerId));
+            if (!playerData) {
+                alert('Player not found.');
+                return;
+            }
+
+            const playerStatsContainer = document.getElementById('playerStats');
+            playerStatsContainer.innerHTML = `
+                <h2>${playerData.name}</h2>
+                <p>ID: ${playerData.id}</p>
+                <p>Position: ${playerData.position}</p>
+                <p>Shooting Skill: ${playerData.shooting}</p>
+                <p>Passing Skill: ${playerData.passing}</p>
+                <p>Defense Skill: ${playerData.defense}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
