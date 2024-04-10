@@ -54,7 +54,7 @@
 
         // Function to generate teams and assign players to them
         function generateTeams() {
-            const shuffledPlayerIds = Object.keys(localStorage).sort(() => 0.5 - Math.random()); // Shuffle player IDs
+            const shuffledPlayerIds = Object.keys(localStorage).filter(key => key.startsWith('player_')).sort(() => 0.5 - Math.random()); // Shuffle player IDs
             let playerIndex = 0;
             teams.forEach(team => {
                 for (let i = 0; i < 12; i++) {
@@ -95,7 +95,7 @@
 
         // Function to regenerate players
         function regeneratePlayers() {
-            if (localStorage.getItem('player_0')) {
+            if (Object.keys(localStorage).filter(key => key.startsWith('player_')).length > 0) {
                 alert('Players already exist. Please refresh the page to regenerate.');
                 return;
             }
@@ -108,10 +108,14 @@
             displayTeams();
         }
 
-        // Call the function to generate teams and display them on page load
+        // Check if players already exist in local storage on page load
         window.onload = function () {
-            generateTeams();
-            displayTeams();
+            if (Object.keys(localStorage).filter(key => key.startsWith('player_')).length === 0) {
+                regeneratePlayers(); // If players don't exist, regenerate them
+            } else {
+                generateTeams(); // If players exist, generate teams and display them
+                displayTeams();
+            }
         };
     </script>
 </body>
