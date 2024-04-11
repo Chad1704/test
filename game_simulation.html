@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Simulation</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game Simulation</h1>
+    <table id="teamStats">
+        <tr>
+            <th>Team 1</th>
+        </tr>
+        <tr>
+            <td id="team1Stats"></td>
+        </tr>
+    </table>
+    <br>
+    <table id="playerStats1">
+        <tr>
+            <th>Player</th>
+            <th>Overall Rating</th>
+            <th>Points</th>
+        </tr>
+        <tbody id="team1PlayerStats"></tbody>
+    </table>
+    <br>
+    <table id="teamStats">
+        <tr>
+            <th>Team 2</th>
+        </tr>
+        <tr>
+            <td id="team2Stats"></td>
+        </tr>
+    </table>
+    <br>
+    <table id="playerStats2">
+        <tr>
+            <th>Player</th>
+            <th>Overall</th>
+            <th>Points</th>
+        </tr>
+        <tbody id="team2PlayerStats"></tbody>
+    </table>
+    <br>
+    <div id="gameResult"></div>
+
+    <script>
+        // Load team data from local storage
+        const teams = JSON.parse(localStorage.getItem('teams'));
+        
+        // Function to calculate total team score
+        function calculateTeamScore(team) {
+            return team.reduce((total, player) => total + Math.round(player.overall / 8), 0);
+        }
+
+        // Function to calculate total team assists
+        function calculateTeamAssists(team) {
+            return team.reduce((total, player) => total + Math.round(player.playmaking / 20), 0);
+        }
+
+        // Function to calculate total team rebounds
+        function calculateTeamRebounds(team) {
+            return team.reduce((total, player) => total + Math.round(player.Rebounding / 20), 0);
+        }
+        
+        // Function to display team stats
+        function displayTeamStats(team, teamNumber) {
+            const teamScore = calculateTeamScore(team);
+            return `<p>Total Team ${teamNumber} Score: ${teamScore}</p>`;
+        }
+
+        // Function to display player stats for a team
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function displayPlayerStats(team, playerStatsTableId) {
+            let tableContent = '';
+            const totalPlayers = team.length;
+            const teamScore = calculateTeamScore(team);
+            const totalPoints = Math.round(teamScore);
+            
+            // Sort players by overall score
+            const sortedPlayers = team.slice().sort((a, b) => b.overall - a.overall);
+            
+            // Allocate points to players based on the specified distribution
+            let pointsAllocation = [
+                { count: 1, percent: 0.25 },
+                { count: 2, percent: 0.20 },
+                { count: 3, percent: 0.25 },
+                { count: totalPlayers - 6, percent: 0.30 }
+            ];
+            
+            let allocatedPoints = 0;
+            pointsAllocation.forEach(({ count, percent }) => {
+                const players = sortedPlayers.slice(allocatedPoints, allocatedPoints + count);
+                shuffleArray(players); // Shuffle the players within the group
+                const totalOverall = players.reduce((total, player) => total + player.overall, 0);
+                players.forEach(player => {
+                    const playerPoints = Math.round((player.overall / totalOverall) * (percent * totalPoints));
+                    tableContent += `<tr><td>${player.name}</td><td>${player.overall}</td><td>${playerPoints}</td></tr>`;
+                });
+                allocatedPoints += count;
+            });
+
+            const playerStatsTable = document.getElementById(playerStatsTableId);
+            playerStatsTable.innerHTML = tableContent;
+        }
+
+        // Function to simulate a game between two teams
+        function simulateGame(team1, team2) {
+            const team1Score = calculateTeamScore(team1);
+            const team2Score = calculateTeamScore(team2);
+
+            // Determine the winner
+            let winner, loser;
+            if (team1Score > team2Score) {
+                winner = team1;
+                loser = team2;
+            } else if (team2Score > team1Score) {
+                winner = team2;
+                loser = team1;
+            } else {
+                winner = null; // It's a tie
+                loser = null;
+            }
+
+            // Update wins and losses
+            if (winner) {
+                winner.wins = (winner.wins || 0) + 1;
+            }
+            if (loser) {
+                loser.losses = (loser.losses || 0) + 1;
+            }
+
+            // Display team stats and the result
+            const team1StatsTable = document.getElementById('team1Stats');
+            team1StatsTable.innerHTML = displayTeamStats(team1, 1);
+            
+            const team2StatsTable = document.getElementById('team2Stats');
+            team2StatsTable.innerHTML = displayTeamStats(team2, 2);
+            
+            displayPlayerStats(team1, 'team1PlayerStats');
+            displayPlayerStats(team2, 'team2PlayerStats');
+            
+            const gameResultDiv = document.getElementById('gameResult');
+            if (winner && loser) {
+                gameResultDiv.innerHTML = `<p>${winner.name} wins with a score of ${team1Score}-${team2Score}!</p>`;
+            } else {
+                gameResultDiv.innerHTML = `<p>It's a tie!</p>`;
+            }
+        }
+
+        // Simulate a game between Team 1 and Team 2
+        simulateGame(teams[0].players, teams[1].players);
+    </script>
+</body>
+</html>

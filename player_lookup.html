@@ -13,6 +13,16 @@
     <div id="playerStats"></div>
 
     <script>
+        // Define the teams array with team names
+        const teamNames = [
+            "Thunderhawks", "Avalanche", "Renegades", "Titans", "Hurricanes",
+            "Wildcats", "Dragons", "Mavericks", "Guardians", "Storm",
+            "Blazers", "Wolverines", "Cyclones", "Patriots", "Bandits",
+            "Lightning", "Heatwave", "Scorpions", "Hawks", "Sharks",
+            "Tigers", "Falcons", "Bears", "Lions", "Wolves",
+            "Panthers", "Rebels", "Raiders", "Spartans","Eagles"
+        ];
+
         function lookupPlayer() {
             const playerId = document.getElementById('playerIdInput').value.trim();
             if (!playerId) {
@@ -27,14 +37,31 @@
             }
 
             const playerStatsContainer = document.getElementById('playerStats');
+            const teamName = getTeamName(playerData.teamId); // Get the team name associated with the player's team ID
             playerStatsContainer.innerHTML = `
                 <h2>${playerData.name}</h2>
                 <p>ID: ${playerData.id}</p>
+                <p>Team: ${teamName}</p> <!-- Display the team name here -->
                 <p>Position: ${playerData.position}</p>
-                <p>Shooting Skill: ${playerData.shooting}</p>
+                <h2>Shooting Skill: ${playerData.shooting}</h2>
+                <p>Finishing Skill: ${playerData.Finishing}</p>
+                <p>Mid Range Skill: ${playerData.MidRange}</p>
+                <p>ThreePoint Skill: ${playerData.ThreePoint}</p>
+                <h2>Playmaking Skill: ${playerData.playmaking}</h2>
                 <p>Passing Skill: ${playerData.passing}</p>
-                <p>Defense Skill: ${playerData.defense}</p>
+                <p>Vision Skill: ${playerData.vision}</p>
+                <p>Ballhandling Skill: ${playerData.ballhandling}</p>
+                <h2>Defense Skill: ${playerData.defense}</h2>
+                <p>Steal Skill: ${playerData.steal}</p>
+                <p>Block Skill: ${playerData.block}</p>
+                <p>Speed Skill: ${playerData.speed}</p>
+                <p>Rebounding Skill: ${playerData.Rebounding}</p>
             `;
+        }
+
+        function getTeamName(teamId) {
+            // Use the team ID as an index to retrieve the corresponding team name from the array
+            return teamNames[teamId - 1] || "Unknown Team"; // Subtract 1 from team ID to match array index
         }
     </script>
 </body>
