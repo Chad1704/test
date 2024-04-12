@@ -38,9 +38,10 @@
 
         // Function to generate teams and assign players to them
         function generateTeams() {
-            teams = Array.from({ length: teamNames.length }, (_, i) => ({ id: i+1, name: teamNames[i], players: [] }));
+            teams = Array.from({ length: teamNames.length }, (_, i) => ({ id: 'team_'+(i+1), name: teamNames[i], players: [] }));
 
             teams.forEach((team, index) => {
+
                 const startIndex = index * 12; // Calculate the starting index for players of this team
                 for (let i = startIndex; i < startIndex + 12; i++) {
                     const playerId = 'player_' + i;
@@ -49,6 +50,8 @@
                         team.players.push(player);
                     }
                 }
+                localStorage.setItem(team.id, JSON.stringify(team));
+
             });
         }
 

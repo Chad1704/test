@@ -49,7 +49,7 @@ function generateRandomPlayer(playerId, teamId) {
         id: playerId, // Id
         name: playerName, // Name
         position: position, // Position
-        teamId: teamId+1, // Team ID
+        teamId: teamId, // Team ID
 
 
         shooting: shootingSkill, // Overall Shooting
@@ -90,7 +90,7 @@ function regeneratePlayers() {
     let teamId = 0; // Initialize teamId
     for (let i = 0; i < 360; i++) {
         const playerId = 'player_' + i;
-        const player = generateRandomPlayer(playerId, teamId); // Pass the current teamId
+        const player = generateRandomPlayer(playerId, ('team_'+(teamId+1))); // Pass the current teamId
         localStorage.setItem(playerId, JSON.stringify(player)); // Store player data in local storage
         if ((i + 1) % 12 === 0) { // Check if 12 players have been generated for the current team
             teamId++; // Increment teamId for the next group of players

@@ -22,15 +22,16 @@
     <div>
         <label for="teamSelect">Select Team:</label>
         <select id="teamSelect" onchange="displaySelectedTeam()">
-            <option value="0">Select a team</option>
+            <option value="def">Select a team</option>
         </select>
     </div>
     <div id="teamsContainer"></div>
 
     <script src="playerGenerator.js"></script>
+    <script src="teamGenerator.js"></script>
     <script>
         // Array to store team data
-        const teams = Array.from({ length: 30 }, (_, i) => ({ id: i+1, name: 'Team ' + (i + 1), players: [], wins: w,lost: l,}));
+        const teams = Array.from({ length: 30 }, (_, i) => ({ id: 'team_'+(i+1), name: 'Team ' + (i + 1), players: [], wins: 0,lost: 0,}));
 
         // Array of team names corresponding to the team data
         const teamNames = [
@@ -60,6 +61,7 @@
 
         // Function to display team stats on the HTML page
         function displayTeams(selectedTeamId) {
+            console.log(selectedTeamId);
             const teamsContainer = document.getElementById('teamsContainer');
             teamsContainer.innerHTML = ''; // Clear existing content
 
@@ -88,12 +90,11 @@
                 regeneratePlayers(); // If players don't exist, regenerate them
             }
             generateTeams();
-
             // Populate the dropdown menu with team names
             const teamSelect = document.getElementById('teamSelect');
             teamNames.forEach((name, index) => {
                 const option = document.createElement('option');
-                option.value = index + 1;
+                option.value = (index+1);
                 option.textContent = name;
                 teamSelect.appendChild(option);
             });
@@ -104,7 +105,7 @@
             const teamSelect = document.getElementById('teamSelect');
             const selectedTeamId = parseInt(teamSelect.value);
             if (!selectedTeamId || isNaN(selectedTeamId)) return;
-            displayTeams(selectedTeamId);
+            displayTeams('team_'+(selectedTeamId));
         }
 
 
