@@ -1,22 +1,16 @@
-// Function to generate a random team with players
-function generateRandomTeam(teamId) {
-    const teamName = "Team " + (teamId + 1);
-    const players = [];
-
-    // Generate 12 players for each team
-    for (let i = 0; i < 12; i++) {
-        const playerId = 'player_' + (teamId * 12 + i);
-        const player = generateRandomPlayer(playerId, teamId); // Use the existing player generation function
-        players.push(player);
-    }
-
-    const team = {
-        id: teamId + 1,
-        name: teamName,
-        players: players
-    };
-
-    return team;
+function generateTeams() {
+    teams.forEach((team, index) => {
+        const startIndex = index * 12; // Calculate the starting index for players of this team
+        for (let i = startIndex; i < startIndex + 12; i++) {
+            const playerId = 'player_' + i;
+            const player = JSON.parse(localStorage.getItem(playerId));
+            if (player && player.teamId === team.id) {
+                team.players.push(player);
+            }
+        }
+        // Assign the team name from the array based on the team's index
+        team.name = teamNames[index];
+    });
 }
 
 // Function to regenerate teams

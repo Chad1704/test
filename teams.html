@@ -15,10 +15,78 @@
             margin-bottom: 5px;
             cursor: pointer; /* Change cursor to pointer to indicate clickable element */
         }
+
+        table.teamsTable th {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        table.teamsTable td {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        table.teamsTable tr {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        table.teamsTable {
+            font-size: 120%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 0;
+        }
+        
+
+        table.teamsTable tr:hover td {
+            background-color: rgb(236, 196, 85);
+        }
+
+        table.teamsTable th,td {
+            padding: .3vw .4vw;
+            border: 0px;
+            border-right: 1px gray solid;
+            border-bottom: 1px gray solid;
+            text-wrap: nowrap;
+        }
+
+        table.teamsTable td:nth-child(1n+5) {
+            text-align: right;
+        }
+
+        table.teamsTable th {
+            text-wrap: nowrap;
+            padding: .3vw 1vw;
+            color: maroon;
+            background-color: lightgray;
+            border-top: 1px gray solid;
+        }
+     
+        table.teamsTable td:first-child {
+            border-left:  1px gray solid;
+        }
+
+        table.teamsTable th:first-child {
+            border-left:  1px gray solid;
+        }
+
+        table.teamsTable thead {
+            background-color: lightgray;
+        }
+
+        table.teamsTable th:first-child {
+            border-top-left-radius: 10px;
+        }
+
+        table.teamsTable th:last-child {
+            border-top-right-radius: 10px;
+        }
+
     </style>
 </head>
 <body>
-    <h1>All Players by Team</h1>
+    <h1>Team Stats</h1>
     <div>
         <label for="teamSelect">Select Team:</label>
         <select id="teamSelect" onchange="displaySelectedTeam()">
@@ -31,7 +99,22 @@
     <script src="teamGenerator.js"></script>
     <script>
         // Array to store team data
-        const teams = Array.from({ length: 30 }, (_, i) => ({ id: 'team_'+(i+1), name: 'Team ' + (i + 1), players: [], wins: 0,lost: 0,}));
+        const teams = Array.from({ length: 30 }, (_, i) => ({ 
+            id: 'team_'+(i+1), 
+            name: 'Team ' + (i + 1), 
+            players: [],
+            league: 'NBA',
+            beganYear: getRandomNumber(1948, 2000),
+            untilYear: 2024,
+            yearsLasted: this.untilYear-this.beganYear,
+            gamesPlayed: this.wins + this.lost,
+            winloss: parseFloat(this.wins-this.gamesPlayed),
+            playoffs: getRandomNumber(10,30),
+            divisionals: getRandomNumber(5,15),
+            conferences: getRandomNumber(5,15),
+            championships: getRandomNumber(5,10),
+            wins: getRandomNumber(50, 99),
+            lost: getRandomNumber(50, 99),}));
 
         // Array of team names corresponding to the team data
         const teamNames = [
@@ -42,22 +125,6 @@
             "Tigers", "Falcons", "Bears", "Lions", "Wolves",
             "Panthers", "Rebels", "Raiders", "Spartans", "Eagles"
         ];
-
-        // Function to generate teams and assign players to them
-        function generateTeams() {
-            teams.forEach((team, index) => {
-                const startIndex = index * 12; // Calculate the starting index for players of this team
-                for (let i = startIndex; i < startIndex + 12; i++) {
-                    const playerId = 'player_' + i;
-                    const player = JSON.parse(localStorage.getItem(playerId));
-                    if (player && player.teamId === team.id) {
-                        team.players.push(player);
-                    }
-                }
-                // Assign the team name from the array based on the team's index
-                team.name = teamNames[index];
-            });
-        }
 
         // Function to display team stats on the HTML page
         function displayTeams(selectedTeamId) {
@@ -73,9 +140,63 @@
             teamDiv.innerHTML = `
                 <h2>${selectedTeam.name}</h2>
                 <div class="players">
-                    ${selectedTeam.players.map(player => `<p class="player" onclick="viewPlayer('${player.id}')">${player.name} - ${player.position} Overall: ${player.overall} ID: #${player.id.split('_')[1]}</p>`).join('')}
+                    <table class="teamsTable" id="teamsTable" cellspacing="0" style="margin-top: 0.5%;">
+            <colgroup>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+            </colgroup>
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Team</th>
+                    <th onclick="sortTable(1)">League</th>
+                    <th onclick="sortTable(2)"><div class="tooltip">Began</div></th>
+                    <th onclick="sortTable(3)">To</th>
+                    <th onclick="sortTable(4)">Years</th>
+                    <th onclick="sortTable(5)">G</th>
+                    <th onclick="sortTable(6)">W</th>
+                    <th onclick="sortTable(7)">L</th>
+                    <th onclick="sortTable(8)">%</th>
+                    <th onclick="sortTable(9)">Plyoff</th>
+                    <th onclick="sortTable(10)">Div</th>
+                    <th onclick="sortTable(11)">Conf</th>
+                    <th onclick="sortTable(12)">Champ</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>${selectedTeam.name}</td>
+                    <td>${selectedTeam.league}</td>
+                    <td>${selectedTeam.beganYear}</td>
+                    <td>${selectedTeam.untilYear}</td>
+                    <td>${selectedTeam.untilYear-selectedTeam.beganYear}</td>
+                    <td>${selectedTeam.wins+selectedTeam.lost}</td>
+                    <td>${selectedTeam.wins}</td>
+                    <td>${selectedTeam.lost}</td>
+                    <td>${selectedTeam.wins/(selectedTeam.wins+selectedTeam.lost)}</td>
+                    <td>${selectedTeam.playoffs}</td>
+                    <td>${selectedTeam.divisionals}</td>
+                    <td>${selectedTeam.conferences}</td>
+                    <td>${selectedTeam.championships}</td>
+                </tr>
+            </tbody>
                 </div>
             `;
+            const teamTable = document.getElementById("teamsTable")
+            teams.forEach((team, index) => {
+                const startIndex = index * 12; // Calculate the starting index for players of this team
+                    });
             teamsContainer.appendChild(teamDiv);
         }
 
@@ -98,6 +219,8 @@
                 option.textContent = name;
                 teamSelect.appendChild(option);
             });
+
+            
         };
 
         // Function to display the selected team
