@@ -19,41 +19,18 @@
 </head>
 <body>
     <h1>All Players by Team</h1>
+    <label for="playerIdInput">Generate Data</label>
+    <button onclick="generateTeams();displayTeams();">Generate</button>
     <div id="teamsContainer"></div>
 
     <script src="playerGenerator.js"></script>
+    <script src="teamGenerator.js"></script>
     <script>
         // Array to store team data
-        let teams = [];
 
         // Array of team names corresponding to the team data
-        const teamNames = [
-            "Thunderhawks", "Avalanche", "Renegades", "Titans", "Hurricanes",
-            "Wildcats", "Dragons", "Mavericks", "Guardians", "Storm",
-            "Blazers", "Wolverines", "Cyclones", "Patriots", "Bandits",
-            "Lightning", "Heatwave", "Scorpions", "Hawks", "Sharks",
-            "Tigers", "Falcons", "Bears", "Lions", "Wolves",
-            "Panthers", "Rebels", "Raiders", "Spartans", "Eagles"
-        ];
 
         // Function to generate teams and assign players to them
-        function generateTeams() {
-            teams = Array.from({ length: teamNames.length }, (_, i) => ({ id: 'team_'+(i+1), name: teamNames[i], players: [] }));
-
-            teams.forEach((team, index) => {
-
-                const startIndex = index * 12; // Calculate the starting index for players of this team
-                for (let i = startIndex; i < startIndex + 12; i++) {
-                    const playerId = 'player_' + i;
-                    const player = JSON.parse(localStorage.getItem(playerId));
-                    if (player && player.teamId === team.id) {
-                        team.players.push(player);
-                    }
-                }
-                localStorage.setItem(team.id, JSON.stringify(team));
-
-            });
-        }
 
         // Function to display team stats on the HTML page
         function displayTeams() {
@@ -83,8 +60,21 @@
             if (Object.keys(localStorage).filter(key => key.startsWith('player_')).length === 0) {
                 regeneratePlayers(); // If players don't exist, regenerate them
             }
-            generateTeams();
-            displayTeams();
+            
+            var teamsString = localStorage.getItem('teams');
+            if (localStorage.getItem('teams')) {
+            teams = JSON.parse(teamsString);
+            }
+
+            if (teams !== null) {
+                teams.forEach((team, index) => {
+                    console.log(team);
+                    currentTeam = JSON.parse(localStorage.getItem("team_"+(index+1)));
+                    team = currentTeam;
+                });
+                displayTeams();
+            }
+
         };
     </script>
 </body>

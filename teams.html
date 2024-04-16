@@ -98,34 +98,10 @@
     <script src="playerGenerator.js"></script>
     <script src="teamGenerator.js"></script>
     <script>
-        // Array to store team data
-        const teams = Array.from({ length: 30 }, (_, i) => ({ 
-            id: 'team_'+(i+1), 
-            name: 'Team ' + (i + 1), 
-            players: [],
-            league: 'NBA',
-            beganYear: getRandomNumber(1948, 2000),
-            untilYear: 2024,
-            yearsLasted: this.untilYear-this.beganYear,
-            gamesPlayed: this.wins + this.lost,
-            winloss: parseFloat(this.wins-this.gamesPlayed),
-            playoffs: getRandomNumber(10,30),
-            divisionals: getRandomNumber(5,15),
-            conferences: getRandomNumber(5,15),
-            championships: getRandomNumber(5,10),
-            wins: getRandomNumber(50, 99),
-            lost: getRandomNumber(50, 99),}));
 
         // Array of team names corresponding to the team data
-        const teamNames = [
-            "Thunderhawks", "Avalanche", "Renegades", "Titans", "Hurricanes",
-            "Wildcats", "Dragons", "Mavericks", "Guardians", "Storm",
-            "Blazers", "Wolverines", "Cyclones", "Patriots", "Bandits",
-            "Lightning", "Heatwave", "Scorpions", "Hawks", "Sharks",
-            "Tigers", "Falcons", "Bears", "Lions", "Wolves",
-            "Panthers", "Rebels", "Raiders", "Spartans", "Eagles"
-        ];
 
+        // Array to store team data
         // Function to display team stats on the HTML page
         function displayTeams(selectedTeamId) {
             console.log(selectedTeamId);
@@ -210,7 +186,6 @@
             if (Object.keys(localStorage).filter(key => key.startsWith('player_')).length === 0) {
                 regeneratePlayers(); // If players don't exist, regenerate them
             }
-            generateTeams();
             // Populate the dropdown menu with team names
             const teamSelect = document.getElementById('teamSelect');
             teamNames.forEach((name, index) => {
@@ -220,7 +195,18 @@
                 teamSelect.appendChild(option);
             });
 
-            
+            var teamsString = localStorage.getItem('teams');
+            if (localStorage.getItem('teams')) {
+            teams = JSON.parse(teamsString);
+            }
+
+            if (teams !== null) {
+                teams.forEach((team, index) => {
+                    console.log(team);
+                    currentTeam = JSON.parse(localStorage.getItem("team_"+(index+1)));
+                    team = currentTeam;
+                });
+            }
         };
 
         // Function to display the selected team
